@@ -1,0 +1,52 @@
+import cv2
+import tkinter as tk
+from tkinter import simpledialog
+import os
+
+def tomar_fotos(cantidad, carpeta_destino):
+    # Crear la carpeta si no existe
+    if not os.path.exists(carpeta_destino):
+        os.makedirs(carpeta_destino)
+
+    # Inicializa la cámara (por lo general la cámara 0 es la predeterminada)
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("Error: no se pudo acceder a la cámara")
+        return
+
+    for i in range(cantidad):
+        # Lee un frame de la cámara
+        ret, frame = cap.read()
+        
+        if not ret:
+            print("Error: no se pudo capturar la imagen")
+            break
+
+        # Guarda la foto con el nombre de foto_{i}.jpg en la carpeta especificada
+        nombre_foto = os.path.join(carpeta_destino, f'foto_{i + 1}.jpg')
+        cv2.imwrite(nombre_foto, frame)
+        print(f'Foto {i + 1} guardada en {nombre_foto}')
+
+    # Libera la cámara y cierra las ventanas
+    cap.release()
+    cv2.destroyAllWindows()
+
+def obtener_datos():
+    # Crea una ventana de entrada para solicitar la cantidad de fotos
+    root = tk.Tk()
+    root.withdraw()  # Oculta la ventana principal
+
+    # Solicita el número de fotos
+    cantidad_fotos = simpledialog.askinteger("Cantidad de Fotos", "¿Cuántas fotos deseas tomar?", minvalue=1)
+
+    # Solicita el nombre de la carpeta
+    carpeta_destino = simpledialog.askstring("Nombre de Carpeta", "¿Cómo deseas llamar la carpeta para guardar las fotos?")
+
+    if cantidad_fotos and carpeta_destino:
+        tomar_fotos(cantidad_fotos, carpeta_destino)
+    else:
+        print("Datos no válidos o no ingresados")
+
+# Llama a la función para obtener la cantidad de fotos y el nombre de la carpeta
+obtener_datos()
